@@ -565,21 +565,50 @@
                         trending: true,
                         code: `// Kinetic Bounce Typography
 app.beginUndoGroup("Kinetic Bounce");
-var comp = app.project.activeItem;
-var textLayer = comp.selectedLayers[0];
 
-var textProp = textLayer.property("ADBE Text Properties");
-var animator = textProp.property("ADBE Text Animators").addProperty("ADBE Text Animator");
-
-var position = animator.property("ADBE Text Animator Properties").addProperty("ADBE Text Position");
-position.setValueAtTime(0, [0, -100, 0]);
-position.setValueAtTime(0.3, [0, 20, 0]);
-position.setValueAtTime(0.6, [0, 0, 0]);
-
-var selector = animator.property("ADBE Text Selectors").property("ADBE Text Selector");
-var offset = selector.property("ADBE Text Range Offset");
-offset.setValueAtTime(0, 0);
-offset.setValueAtTime(2, 100);
+try {
+    var comp = app.project.activeItem;
+    if (!comp || !(comp instanceof CompItem)) {
+        alert("Por favor abre una composición");
+        throw new Error("No composition");
+    }
+    
+    if (comp.selectedLayers.length === 0) {
+        alert("Por favor selecciona una capa de texto");
+        throw new Error("No layer selected");
+    }
+    
+    var textLayer = comp.selectedLayers[0];
+    if (!(textLayer instanceof TextLayer)) {
+        alert("La capa seleccionada debe ser de texto");
+        throw new Error("Not a text layer");
+    }
+    
+    // Acceder a propiedades de texto
+    var textProp = textLayer.property("Text");
+    var animators = textProp.property("Animators");
+    var animator = animators.addProperty("Animator");
+    
+    // Agregar propiedad de posición
+    var animatorProp = animator.property("Properties");
+    var position = animatorProp.addProperty("Position");
+    
+    // Configurar keyframes
+    position.setValueAtTime(0, [0, -100, 0]);
+    position.setValueAtTime(0.3, [0, 20, 0]);
+    position.setValueAtTime(0.6, [0, 0, 0]);
+    
+    // Configurar selector de rango
+    var selector = animator.property("Selectors").property(1);
+    var offset = selector.property("Offset");
+    offset.setValueAtTime(0, 0);
+    offset.setValueAtTime(2, 100);
+    
+    alert("¡Efecto aplicado con éxito!");
+    
+} catch(e) {
+    alert("Error: " + e.toString());
+}
 
 app.endUndoGroup();`
                     },
@@ -590,25 +619,52 @@ app.endUndoGroup();`
                         trending: true,
                         code: `// Slide In Kinetic Typography
 app.beginUndoGroup("Slide Typography");
-var comp = app.project.activeItem;
-var textLayer = comp.selectedLayers[0];
 
-var textProp = textLayer.property("ADBE Text Properties");
-var animator = textProp.property("ADBE Text Animators").addProperty("ADBE Text Animator");
-
-var position = animator.property("ADBE Text Animator Properties").addProperty("ADBE Text Position");
-position.setValueAtTime(0, [-200, 0, 0]);
-position.setValueAtTime(0.8, [10, 0, 0]);
-position.setValueAtTime(1.2, [0, 0, 0]);
-
-var opacity = animator.property("ADBE Text Animator Properties").addProperty("ADBE Text Opacity");
-opacity.setValueAtTime(0, 0);
-opacity.setValueAtTime(0.5, 100);
-
-var selector = animator.property("ADBE Text Selectors").property("ADBE Text Selector");
-var offset = selector.property("ADBE Text Range Offset");
-offset.setValueAtTime(0, 0);
-offset.setValueAtTime(2.5, 100);
+try {
+    var comp = app.project.activeItem;
+    if (!comp || !(comp instanceof CompItem)) {
+        alert("Por favor abre una composición");
+        throw new Error("No composition");
+    }
+    
+    if (comp.selectedLayers.length === 0) {
+        alert("Por favor selecciona una capa de texto");
+        throw new Error("No layer selected");
+    }
+    
+    var textLayer = comp.selectedLayers[0];
+    if (!(textLayer instanceof TextLayer)) {
+        alert("La capa seleccionada debe ser de texto");
+        throw new Error("Not a text layer");
+    }
+    
+    var textProp = textLayer.property("Text");
+    var animators = textProp.property("Animators");
+    var animator = animators.addProperty("Animator");
+    
+    // Posición
+    var animatorProp = animator.property("Properties");
+    var position = animatorProp.addProperty("Position");
+    position.setValueAtTime(0, [-200, 0, 0]);
+    position.setValueAtTime(0.8, [10, 0, 0]);
+    position.setValueAtTime(1.2, [0, 0, 0]);
+    
+    // Opacidad
+    var opacity = animatorProp.addProperty("Opacity");
+    opacity.setValueAtTime(0, 0);
+    opacity.setValueAtTime(0.5, 100);
+    
+    // Selector
+    var selector = animator.property("Selectors").property(1);
+    var offset = selector.property("Offset");
+    offset.setValueAtTime(0, 0);
+    offset.setValueAtTime(2.5, 100);
+    
+    alert("¡Slide In aplicado!");
+    
+} catch(e) {
+    alert("Error: " + e.toString());
+}
 
 app.endUndoGroup();`
                     },
@@ -1377,16 +1433,65 @@ app.endUndoGroup();`
             removeLoading();
             
             try {
-                const systemPrompt = `Eres un experto en After Effects y ExtendScript. Ayudas a crear scripts JSX para After Effects 2025.
+                const systemPrompt = `Eres un experto en After Effects 2025 y ExtendScript. Generas scripts JSX funcionales y probados.
 
-Cuando el usuario pida un efecto:
-1. Genera código JSX funcional y completo
-2. Incluye comentarios en español
-3. Usa app.beginUndoGroup() y app.endUndoGroup()
-4. Maneja errores apropiadamente
-5. Explica brevemente cómo usar el script
+IMPORTANTE - Usa estos nombres de propiedades exactos:
+- Para texto: textLayer.property("Text")
+- Animadores: textProp.property("Animators")
+- Propiedades de animador: animator.property("Properties")
+- Selectores: animator.property("Selectors").property(1)
+- Offset: selector.property("Offset")
+- More Options: textProp.property("More Options")
+- Per-character 3D: moreOptions.property("Per-character 3D")
 
-Responde SOLO con el código JSX entre bloques de código.`;
+Propiedades disponibles en animator.property("Properties").addProperty():
+- "Position" - Posición
+- "Scale" - Escala
+- "Rotation" - Rotación Z
+- "X Rotation" - Rotación X
+- "Y Rotation" - Rotación Y
+- "Opacity" - Opacidad
+- "Fill Color" - Color de relleno
+- "Stroke Color" - Color de trazo
+
+SIEMPRE incluye:
+1. app.beginUndoGroup() al inicio
+2. try-catch para manejo de errores
+3. Verificación de que hay composición activa
+4. Verificación de que hay capa seleccionada
+5. alert() con mensaje de éxito o error
+6. app.endUndoGroup() al final
+
+Estructura básica:
+\`\`\`javascript
+app.beginUndoGroup("Nombre del Efecto");
+
+try {
+    var comp = app.project.activeItem;
+    if (!comp || !(comp instanceof CompItem)) {
+        alert("Por favor abre una composición");
+        throw new Error("No composition");
+    }
+    
+    if (comp.selectedLayers.length === 0) {
+        alert("Por favor selecciona una capa");
+        throw new Error("No layer selected");
+    }
+    
+    var layer = comp.selectedLayers[0];
+    
+    // Tu código aquí
+    
+    alert("¡Efecto aplicado con éxito!");
+    
+} catch(e) {
+    alert("Error: " + e.toString());
+}
+
+app.endUndoGroup();
+\`\`\`
+
+Responde con código completo y funcional.`;
 
                 let apiUrl, headers, body;
                 
